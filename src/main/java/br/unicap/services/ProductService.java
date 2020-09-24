@@ -6,12 +6,13 @@ import br.unicap.model.Product;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @ApplicationScoped
 public class ProductService extends BaseService<Product>{
 
-    List<Product> products = new ArrayList<>();
+    HashMap<Long, Product> products = new HashMap<>();
 
     public ProductService() {
         super(Product.class);
@@ -24,8 +25,10 @@ public class ProductService extends BaseService<Product>{
 
     public void fetchAll() {
         this.products.clear();
-        this.products.addAll(this.findAll());
-        System.out.println("Fetched " +  this.products.size() + " from the database.");
+        this.findAll().forEach((eachProduct) -> {
+            this.products.put(eachProduct.getId(), eachProduct);
+        });
+        System.out.println("Fetched " +  this.products.size() + " products from the database.");
     }
 
 }

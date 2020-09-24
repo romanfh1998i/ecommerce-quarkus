@@ -12,6 +12,17 @@ public class Product {
 
     private String name;
 
+    private Double price;
+
+    @Column(name = "amount_available")
+    private Long amountAvailable;
+
+    @Column(name = "amount_in_cart")
+    private Long amountInCarts;
+
+    @Column(name = "amount_ordered")
+    private Long amountOrdered;
+
     public Product(Long id, String name) {
         this.id = id;
         this.name = name;
