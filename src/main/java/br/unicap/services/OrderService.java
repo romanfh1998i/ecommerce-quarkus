@@ -6,4 +6,7 @@ import javax.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class OrderService extends BaseService<Order>{
+    public OrderService(Class<Order> persistClass) {
+        super(persistClass);
+    }
 }
