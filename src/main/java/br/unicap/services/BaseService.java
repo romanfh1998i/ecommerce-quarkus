@@ -26,7 +26,14 @@ public class BaseService<T> {
         return resource;
     }
 
+    @Transactional
+    public T update(T resource) {
+        em.merge(resource);
+        return resource;
+    }
+
     public List<T> findAll() {
+
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(persistClass);
         Root<T> rootEntry = cq.from(persistClass);

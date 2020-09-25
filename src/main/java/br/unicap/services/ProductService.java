@@ -5,9 +5,7 @@ import br.unicap.model.Product;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 @ApplicationScoped
 public class ProductService extends BaseService<Product>{
@@ -28,7 +26,34 @@ public class ProductService extends BaseService<Product>{
         this.findAll().forEach((eachProduct) -> {
             this.products.put(eachProduct.getId(), eachProduct);
         });
-        System.out.println("Fetched " +  this.products.size() + " products from the database.");
     }
 
+    public Product getById (Long id) {
+        return products.get(id);
+    }
+
+    public void handleCartAddition(Product p) {
+        p.setAmountAvailable(p.getAmountAvailable() - 1);
+        p.setAmountInCarts(p.getAmountInCarts() + 1);
+        this.updateProductAsync(p);
+    }
+
+    public void handleCartRemoval(Product p) {
+        p.setAmountAvailable(p.getAmountAvailable() + 1);
+        p.setAmountInCarts(p.getAmountInCarts() - 1);
+        this.updateProductAsync(p);
+    }
+
+    public void updateProductAsync (Product p) {
+        Thread t = new Thread(() -> {
+            this.update(p);
+        });
+        t.start();
+    }
+
+    public Product create(Product p) {
+        Product created = this.insert(p);
+        this.products.put(created.getId(), created);
+        return created;
+    }
 }

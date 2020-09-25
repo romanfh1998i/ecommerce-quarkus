@@ -23,7 +23,7 @@ public class ProuctEndpoint {
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public Product createProduct(Product p) {
-        return productService.insert(p);
+        return productService.create(p);
     }
 
     @POST
@@ -33,4 +33,5 @@ public class ProuctEndpoint {
         productService.fetchAll();
         return Response.accepted().build();
     }
+
 }

@@ -52,4 +52,35 @@ public class Product {
         this.name = name;
     }
 
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public Long getAmountAvailable() {
+        return amountAvailable;
+    }
+
+    public void setAmountAvailable(Long amountAvailable) {
+        this.amountAvailable = amountAvailable;
+    }
+
+    public Long getAmountInCarts() {
+        return amountInCarts;
+    }
+
+    public void setAmountInCarts(Long amountInCarts) {
+        this.amountInCarts = amountInCarts;
+    }
+
+    public Long getAmountOrdered() {
+        return amountOrdered;
+    }
+
+    public void setAmountOrdered(Long amountOrdered) {
+        this.amountOrdered = amountOrdered;
+    }
 }
