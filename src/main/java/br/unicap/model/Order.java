@@ -1,7 +1,7 @@
 package br.unicap.model;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_order")
@@ -10,7 +10,11 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String owner_name;
+
+    private String ownerName;
+
+    @Transient
+    private String cartId;
 
     @ManyToMany
     @JoinTable(
@@ -18,17 +22,22 @@ public class Order {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "order_id")
     )
-    private Set<Product> products;
-    private Double total_price;
-    private Long card_number;
+    private List<Product> products;
+
+    @Column(name = "total_price")
+    private Double totalPrice;
+
+    @Column(name = "card_number")
+    private Long cardNumber;
+
     private String address;
 
-    public Order(Long id, String owner_name, Set<Product> products, Double total_price, Long card_number, String address) {
+    public Order(Long id, String ownerName, List products, Double total_price, Long card_number, String address) {
         this.id = id;
-        this.owner_name = owner_name;
+        this.ownerName = ownerName;
         this.products = products;
-        this.total_price = total_price;
-        this.card_number = card_number;
+        this.totalPrice = total_price;
+        this.cardNumber = card_number;
         this.address = address;
     }
 
@@ -52,36 +61,44 @@ public class Order {
         this.id = id;
     }
 
-    public String getOwner_name() {
-        return owner_name;
+    public String getOwnerName() {
+        return ownerName;
     }
 
-    public void setOwner_name(String owner_name) {
-        this.owner_name = owner_name;
+    public void setOwnerName(String owner_name) {
+        this.ownerName = owner_name;
     }
 
-    public void setProducts(Set<Product> products) {
-        this.products = products;
-    }
-
-    public Set<Product> getProducts() {
+    public List getProducts() {
         return products;
     }
 
-    public Double getTotal_price() {
-        return total_price;
+
+    public String getCartId() {
+        return cartId;
     }
 
-    public void setTotal_price(Double total_price) {
-        this.total_price = total_price;
+    public void setCartId(String cartId) {
+        this.cartId = cartId;
     }
 
-    public Long getCard_number() {
-        return card_number;
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 
-    public void setCard_number(Long card_number) {
-        this.card_number = card_number;
+    public Double getTotalPrice() {
+        return totalPrice;
     }
 
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public Long getCardNumber() {
+        return cardNumber;
+    }
+
+    public void setCardNumber(Long cardNumber) {
+        this.cardNumber = cardNumber;
+    }
 }

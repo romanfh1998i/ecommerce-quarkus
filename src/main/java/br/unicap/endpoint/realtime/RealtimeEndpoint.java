@@ -31,8 +31,9 @@ public class RealtimeEndpoint {
         } else if (message.startsWith("removeFromCart")) {
             String[] parts = message.split(" ");
             cartService.removeFromCart(session, Long.parseLong(parts[1]));
+        } else if (message.startsWith("getCart")) {
+            cartService.sendCart(session);
         }
-        session.getAsyncRemote().sendText(message);
     }
 
     @OnClose

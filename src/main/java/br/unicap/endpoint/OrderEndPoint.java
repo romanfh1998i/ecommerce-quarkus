@@ -20,6 +20,6 @@ public class OrderEndPoint {
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public Order createOrder(Order o) {
-        return orderService.insert(o);
+        return orderService.createOrder(o);
     }
 }

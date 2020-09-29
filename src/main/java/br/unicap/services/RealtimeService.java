@@ -37,7 +37,6 @@ public class RealtimeService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
     }
 
 }

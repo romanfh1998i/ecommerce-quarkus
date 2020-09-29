@@ -6,6 +6,8 @@ import br.unicap.model.Product;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 @ApplicationScoped
 public class ProductService extends BaseService<Product>{
@@ -44,6 +46,12 @@ public class ProductService extends BaseService<Product>{
         this.updateProductAsync(p);
     }
 
+    public void handleOrderCreation(Product p) {
+        p.setAmountInCarts(p.getAmountInCarts() - 1);
+        p.setAmountOrdered(p.getAmountOrdered() + 1);
+        this.updateProductAsync(p);
+    }
+
     public void updateProductAsync (Product p) {
         Thread t = new Thread(() -> {
             this.update(p);
@@ -56,4 +64,5 @@ public class ProductService extends BaseService<Product>{
         this.products.put(created.getId(), created);
         return created;
     }
+
 }
