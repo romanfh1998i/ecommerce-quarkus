@@ -3,7 +3,6 @@ package br.unicap.services;
 import br.unicap.model.Cart;
 import br.unicap.model.Product;
 import br.unicap.model.SerializedCartPacket;
-import br.unicap.model.SerializedProductPacket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -11,6 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.websocket.Session;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
 public class CartService {
@@ -21,7 +21,7 @@ public class CartService {
     @Inject
     RealtimeService realtimeService;
 
-    HashMap<Session, Cart> activeCarts = new HashMap<>();
+    ConcurrentHashMap<Session, Cart> activeCarts = new ConcurrentHashMap();
 
     public void addToCart(Session session, Long productId) {
         Cart c;
@@ -30,7 +30,6 @@ public class CartService {
         } else {
             c = new Cart();
         }
-
 
         Product p = productService.getById(productId);
         productService.handleCartAddition(p);
@@ -45,6 +44,7 @@ public class CartService {
         Product p = productService.getById(productId);
         productService.handleCartRemoval(p);
         c.getProducts().remove(p);
+        realtimeService.broadcastProductUpdate(p);
     }
 
     public void removeCart(Cart cart) {

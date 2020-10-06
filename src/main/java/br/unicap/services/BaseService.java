@@ -43,3 +43,4 @@ public class BaseService<T> {
         return allQuery.getResultList();
     }
 }
+

@@ -5,14 +5,12 @@ import br.unicap.model.Product;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
 public class ProductService extends BaseService<Product>{
 
-    HashMap<Long, Product> products = new HashMap<>();
+    ConcurrentHashMap<Long, Product> products = new ConcurrentHashMap<>();
 
     public ProductService() {
         super(Product.class);

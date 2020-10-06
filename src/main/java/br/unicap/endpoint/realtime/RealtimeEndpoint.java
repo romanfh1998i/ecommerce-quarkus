@@ -1,6 +1,7 @@
 package br.unicap.endpoint.realtime;
 
 import br.unicap.services.CartService;
+import br.unicap.services.RealtimeCommandService;
 import br.unicap.services.RealtimeService;
 
 import javax.inject.Inject;
@@ -16,6 +17,9 @@ public class RealtimeEndpoint {
     @Inject
     CartService cartService;
 
+    @Inject
+    RealtimeCommandService realtimeCommandService;
+
     @OnOpen
     public void onOpen(Session session) {
         session.getAsyncRemote().sendText("hello");
@@ -24,16 +28,19 @@ public class RealtimeEndpoint {
 
     @OnMessage
     public void onMessage(Session session, String message) {
+        //TODO: Arrumar essa cagada aqui, talvez usar um hashmap.
+        realtimeCommandService.execute(session, message);
+        /*
         if (message.startsWith("addToCart")) {
             String[] parts = message.split(" ");
             cartService.addToCart(session, Long.parseLong(parts[1]));
-
         } else if (message.startsWith("removeFromCart")) {
             String[] parts = message.split(" ");
             cartService.removeFromCart(session, Long.parseLong(parts[1]));
         } else if (message.startsWith("getCart")) {
             cartService.sendCart(session);
         }
+        */
     }
 
     @OnClose
