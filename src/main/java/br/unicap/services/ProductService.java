@@ -2,9 +2,15 @@ package br.unicap.services;
 
 
 import br.unicap.model.Product;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
@@ -19,6 +25,15 @@ public class ProductService extends BaseService<Product>{
     @PostConstruct
     public void postConstruct() {
         this.fetchAll();
+    }
+
+    @Incoming("product-create")
+    public Product create(String serializedProduct) throws JsonProcessingException {
+        Product p = new ObjectMapper().readValue(serializedProduct, Product.class);
+        System.out.println("Aaaaaaa");
+        Product created = this.insert(p);
+        this.products.put(created.getId(), created);
+        return created;
     }
 
     public void fetchAll() {
@@ -55,12 +70,6 @@ public class ProductService extends BaseService<Product>{
             this.update(p);
         });
         t.start();
-    }
-
-    public Product create(Product p) {
-        Product created = this.insert(p);
-        this.products.put(created.getId(), created);
-        return created;
     }
 
 }

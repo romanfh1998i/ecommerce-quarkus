@@ -3,7 +3,12 @@ package br.unicap.endpoint;
 
 
 import br.unicap.model.Product;
+import br.unicap.model.SerializedCartPacket;
 import br.unicap.services.ProductService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -17,17 +22,24 @@ public class ProuctEndpoint {
     @Inject
     ProductService productService;
 
+    @Inject
+    @Channel("product-create")
+    Emitter<String> productEmitter;
+
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public List<Product> getAll (Product p) {
+    public List<Product> getAll () {
         return productService.findAll();
     }
 
     @POST
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Product createProduct(Product p) {
-        return productService.create(p);
+    public Product createProduct(Product p) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String productJson = objectMapper.writeValueAsString(p);
+        productEmitter.send(productJson);
+        return p;
     }
 
     @POST

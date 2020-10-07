@@ -30,7 +30,6 @@ public class RealtimeCommandService {
         this.commandHandlers.put("addToCart", addToCartCommandService);
         this.commandHandlers.put("removeFromCart", removeFromCartCommandService);
         this.commandHandlers.put("getCart", getCartCommandService);
-
     }
 
     public void execute(Session session, String message) {
