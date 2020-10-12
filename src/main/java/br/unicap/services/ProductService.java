@@ -35,10 +35,16 @@ public class ProductService extends BaseService<Product>{
         return created;
     }
 
+    @Incoming("product-reload")
+    public void reload(String reloadProduct){
+        this.fetchAll();
+    }
+
     public void fetchAll() {
         this.products.clear();
         this.findAll().forEach((eachProduct) -> {
             this.products.put(eachProduct.getId(), eachProduct);
+            System.out.println(eachProduct.getAmountAvailable());
         });
     }
 
