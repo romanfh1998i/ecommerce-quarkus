@@ -1,8 +1,13 @@
 package br.unicap.endpoint.realtime;
 
+import br.unicap.model.serializeHelpers.messages.SerializedCommand;
 import br.unicap.services.CartService;
 import br.unicap.services.RealtimeCommandService;
 import br.unicap.services.RealtimeService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 import javax.inject.Inject;
 import javax.websocket.*;
@@ -17,6 +22,10 @@ public class RealtimeEndpoint {
     @Inject
     RealtimeCommandService realtimeCommandService;
 
+    @Inject
+    @Channel("command-executor")
+    Emitter<String> commandExecutorEmmiter;
+
     @OnOpen
     public void onOpen(Session session) {
         session.getAsyncRemote().sendText("hello");
@@ -24,8 +33,14 @@ public class RealtimeEndpoint {
     }
 
     @OnMessage
-    public void onMessage(Session session, String message) {
-        realtimeCommandService.execute(session, message);
+    public void onMessage(Session session, String message) throws JsonProcessingException {
+        SerializedCommand serializedCommand = new SerializedCommand(session.getId(), message);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(serializedCommand);
+        System.out.println(json);
+        new Thread(() -> {
+            commandExecutorEmmiter.send(json);
+        }).start();
     }
 
     @OnClose
