@@ -1,7 +1,7 @@
 package br.unicap.services;
 
 import br.unicap.model.Product;
-import br.unicap.model.SerializedProductPacket;
+import br.unicap.model.serializeHelpers.realtimePackets.SerializedProductPacket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

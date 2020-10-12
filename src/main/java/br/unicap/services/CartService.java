@@ -2,7 +2,7 @@ package br.unicap.services;
 
 import br.unicap.model.Cart;
 import br.unicap.model.Product;
-import br.unicap.model.SerializedCartPacket;
+import br.unicap.model.serializeHelpers.realtimePackets.SerializedCartPacket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

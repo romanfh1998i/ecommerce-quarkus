@@ -1,4 +1,6 @@
-package br.unicap.model;
+package br.unicap.model.serializeHelpers.realtimePackets;
+
+import br.unicap.model.Cart;
 
 public class SerializedCartPacket {
     private String packetType;

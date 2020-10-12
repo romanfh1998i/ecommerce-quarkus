@@ -3,7 +3,6 @@ package br.unicap.endpoint;
 
 
 import br.unicap.model.Product;
-import br.unicap.model.SerializedCartPacket;
 import br.unicap.services.ProductService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
