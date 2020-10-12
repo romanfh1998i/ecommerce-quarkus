@@ -11,6 +11,8 @@ import org.eclipse.microprofile.reactive.messaging.Incoming;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
@@ -69,6 +71,10 @@ public class ProductService extends BaseService<Product>{
             this.update(p);
         });
         t.start();
+    }
+
+    public Collection<Product> getAllProducts() {
+        return this.products.values();
     }
 
 }

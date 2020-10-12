@@ -40,7 +40,6 @@ public class OrderService extends BaseService<Order>{
         o.setProducts(productsInCart);
         o.setTotalPrice(totalPrice);
         cartService.removeCart(c);
-        System.out.println(o);
         return this.insert(o);
     }
 }

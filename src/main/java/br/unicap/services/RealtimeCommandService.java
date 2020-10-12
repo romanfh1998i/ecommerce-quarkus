@@ -43,13 +43,11 @@ public class RealtimeCommandService {
 
     @Incoming("command-executor")
     public void execute(String JsonSerializedCommand) {
-        System.out.println(JsonSerializedCommand);
         SerializedCommand serializedCommand = null;
         try {
             serializedCommand = new ObjectMapper().readValue(JsonSerializedCommand, SerializedCommand.class);
             String message = serializedCommand.getCommand();
             Session sessionFound = realtimeService.findSessionByID(serializedCommand.getSessionId());
-            System.out.println(message);
             String[] parts = message.split(" ");
             RealtimeCommand cmd = this.commandHandlers.get(parts[0]);
             cmd.execute(sessionFound, parts);

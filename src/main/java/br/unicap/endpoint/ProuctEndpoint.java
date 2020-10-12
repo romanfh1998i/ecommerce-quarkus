@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Collection;
 import java.util.List;
 
 @Path("/product")
@@ -27,8 +28,8 @@ public class ProuctEndpoint {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public List<Product> getAll () {
-        return productService.findAll();
+    public Collection<Product> getAll () {
+        return productService.getAllProducts();
     }
 
     @POST

@@ -37,7 +37,7 @@ public class RealtimeEndpoint {
         SerializedCommand serializedCommand = new SerializedCommand(session.getId(), message);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(serializedCommand);
-        System.out.println(json);
+
         new Thread(() -> {
             commandExecutorEmmiter.send(json);
         }).start();
