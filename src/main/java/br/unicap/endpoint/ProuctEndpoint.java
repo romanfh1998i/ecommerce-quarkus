@@ -24,7 +24,7 @@ public class ProuctEndpoint {
 
     @Inject
     @Channel("product-create")
-    Emitter<String> productEmitter;
+    Emitter<Product> productEmitter;
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -35,10 +35,8 @@ public class ProuctEndpoint {
     @POST
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Product createProduct(Product p) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String productJson = objectMapper.writeValueAsString(p);
-        productEmitter.send(productJson);
+    public Product createProduct(Product p) {
+        productEmitter.send(p);
         return p;
     }
 

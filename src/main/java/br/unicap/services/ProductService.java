@@ -30,8 +30,7 @@ public class ProductService extends BaseService<Product>{
     }
 
     @Incoming("product-create")
-    public Product create(String serializedProduct) throws JsonProcessingException {
-        Product p = new ObjectMapper().readValue(serializedProduct, Product.class);
+    public Product create(Product p) throws JsonProcessingException {
         Product created = this.insert(p);
         this.products.put(created.getId(), created);
         return created;
