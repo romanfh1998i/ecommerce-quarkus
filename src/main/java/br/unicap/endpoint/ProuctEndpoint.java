@@ -42,14 +42,11 @@ public class ProuctEndpoint {
         return p;
     }
 
-    @Inject
-    @Channel("product-reload")
-    Emitter<String> reloadEmitter;
-
     @POST
     @Path("/reload")
-    public Response reload() {
-        reloadEmitter.send("Reload products");
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response reload(Product p) {
+        productService.fetchAll();
         return Response.accepted().build();
     }
 
