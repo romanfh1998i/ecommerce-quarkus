@@ -14,8 +14,13 @@ public class AddToCartCommandService implements RealtimeCommand{
     @Inject
     CartService cartService;
 
+    @Inject
+    @Channel("cart-add")
+    Emitter<String> addToCart;
+
     @Override
     public void execute(Session session, String[] args) {
+
         cartService.addToCart(session, Long.parseLong(args[1]));
     }
 }

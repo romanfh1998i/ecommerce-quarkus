@@ -14,15 +14,6 @@ public class RealtimeService {
 
     private ArrayList<Session> connectedSessions = new ArrayList<>();
 
-    public Session findSessionByID (String sessionId) {
-        for (Session s : connectedSessions) {
-            if (s.getId().equals(sessionId)) {
-                return s;
-            }
-        }
-        return null;
-    }
-
     public void addSession(Session session) {
         connectedSessions.add(session);
     }
