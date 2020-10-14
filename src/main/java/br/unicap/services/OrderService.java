@@ -26,9 +26,9 @@ public class OrderService extends BaseService<Order>{
     public OrderService() {
         super(Order.class);
     }
+
     @Incoming("order-create")
-    public Order createOrder(String serializedOrder) throws JsonProcessingException {
-        Order o = new ObjectMapper().readValue(serializedOrder, Order.class);
+    public Order createOrder(Order o) {
         Cart c = cartService.findById(o.getCartId());
         List<Product> productsInCart = c.getProducts();
         Double totalPrice = 0D;

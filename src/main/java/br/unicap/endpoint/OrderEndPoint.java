@@ -23,16 +23,14 @@ public class OrderEndPoint {
 
     @Inject
     @Channel("order-create")
-    Emitter<String> orderEmitter;
+    Emitter<Order> orderEmitter;
 
 
     @POST
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Order createOrder(Order o) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String orderJson = objectMapper.writeValueAsString(o);
-        orderEmitter.send(orderJson);
+    public Order createOrder(Order o) {
+        orderEmitter.send(o);
         return o;
     }
 }
