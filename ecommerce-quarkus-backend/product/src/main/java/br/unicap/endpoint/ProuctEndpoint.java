@@ -1,7 +1,5 @@
 package br.unicap.endpoint;
 
-
-
 import br.unicap.model.Product;
 import br.unicap.services.ProductService;
 import com.fasterxml.jackson.core.JsonProcessingException;
