@@ -24,7 +24,9 @@
     <modules>
         <module>application</module>
         <module>common</module>
+        <module>product</module>
     </modules>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
