@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,11 +30,44 @@ public class ProductService extends BaseService<Product>{
         this.fetchAll();
     }
 
+    @Inject
+    @Channel("product-updated")
+    Emitter<Product> productUpdatedEmmiter;
+
     @Incoming("product-create")
     public Product create(Product p) throws JsonProcessingException {
         Product created = this.insert(p);
         this.products.put(created.getId(), created);
         return created;
+    }
+
+    @Incoming("cart-add-request")
+    public void handleCartAdd(Long productId) {
+        Product p = this.getById(productId);
+        p.setAmountAvailable(p.getAmountAvailable() - 1);
+        p.setAmountInCarts(p.getAmountInCarts() + 1);
+        this.updateProductAsync(p);
+        Thread t = new Thread(() -> {
+            productUpdatedEmmiter.send(p);
+        });
+        t.start();
+    }
+
+    @Incoming("cart-remove-request")
+    public void handleCartRemove(Long productId) {
+        Product p = this.getById(productId);
+        p.setAmountAvailable(p.getAmountAvailable() + 1);
+        p.setAmountInCarts(p.getAmountInCarts() - 1);
+        this.updateProductAsync(p);
+    }
+
+    @Incoming("cart-ordered-request")
+    public void handleCartOrdered(List<Product> products) {
+        for (Product eachProduct: products) {
+            eachProduct.setAmountAvailable(eachProduct.getAmountAvailable() + 1);
+            eachProduct.setAmountInCarts(eachProduct.getAmountInCarts() - 1);
+            this.updateProductAsync(eachProduct);
+        }
     }
 
     public void fetchAll() {
@@ -47,27 +81,16 @@ public class ProductService extends BaseService<Product>{
         return products.get(id);
     }
 
-    public void handleCartAddition(Product p) {
-        p.setAmountAvailable(p.getAmountAvailable() - 1);
-        p.setAmountInCarts(p.getAmountInCarts() + 1);
-        this.updateProductAsync(p);
-    }
-
-    public void handleCartRemoval(Product p) {
-        p.setAmountAvailable(p.getAmountAvailable() + 1);
-        p.setAmountInCarts(p.getAmountInCarts() - 1);
-        this.updateProductAsync(p);
-    }
-
-    public void handleOrderCreation(Product p) {
-        p.setAmountInCarts(p.getAmountInCarts() - 1);
-        p.setAmountOrdered(p.getAmountOrdered() + 1);
-        this.updateProductAsync(p);
-    }
-
     public void updateProductAsync (Product p) {
         Thread t = new Thread(() -> {
             this.update(p);
+        });
+        t.start();
+    }
+
+    public void broadcastUpdateProductAsync (Product p) {
+        Thread t = new Thread(() -> {
+            productUpdatedEmmiter.send(p);
         });
         t.start();
     }

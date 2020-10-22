@@ -4,8 +4,10 @@ import br.unicap.model.Product;
 import br.unicap.model.serializeHelpers.realtimePackets.SerializedProductPacket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.websocket.Session;
 import java.util.ArrayList;
 
@@ -28,7 +30,9 @@ public class RealtimeService {
         });
     }
 
+    @Incoming("product-updated")
     public void broadcastProductUpdate(Product p) {
+        System.out.println("aaaaa");
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             SerializedProductPacket packet = new SerializedProductPacket("update", p);

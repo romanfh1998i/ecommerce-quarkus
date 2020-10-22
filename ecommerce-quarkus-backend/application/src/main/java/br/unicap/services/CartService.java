@@ -1,10 +1,13 @@
 package br.unicap.services;
 
 import br.unicap.model.Cart;
+import br.unicap.model.Order;
 import br.unicap.model.Product;
 import br.unicap.model.serializeHelpers.realtimePackets.SerializedCartPacket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -16,10 +19,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CartService {
 
     @Inject
-    ProductService productService;
+    RealtimeService realtimeService;
 
     @Inject
-    RealtimeService realtimeService;
+    @Channel("cart-add-request")
+    Emitter<Long> cartAddRequest;
+
+    @Inject
+    @Channel("cart-remove-request")
+    Emitter<Long> cartRemoveRequest;
 
     ConcurrentHashMap<Session, Cart> activeCarts = new ConcurrentHashMap();
 
@@ -31,20 +39,25 @@ public class CartService {
             c = new Cart();
         }
 
-        Product p = productService.getById(productId);
-        productService.handleCartAddition(p);
-        c.getProducts().add(p);
-        realtimeService.broadcastProductUpdate(p);
+        cartAddRequest.send(productId);
+        c.getProducts().add(new Product(productId));
 
         activeCarts.put(session, c);
     }
 
     public void removeFromCart(Session session, Long productId) {
         Cart c = activeCarts.get(session);
-        Product p = productService.getById(productId);
-        productService.handleCartRemoval(p);
-        c.getProducts().remove(p);
-        realtimeService.broadcastProductUpdate(p);
+        Product toRemove = null;
+        for (Product eachProductInCart : c.getProducts()) {
+            if (eachProductInCart.getId().equals(productId)) {
+                toRemove = eachProductInCart;
+                break;
+            }
+        }
+        if (toRemove != null) {
+            c.getProducts().remove(toRemove);
+        }
+        cartRemoveRequest.send(productId);
     }
 
     public void removeCart(Cart cart) {
