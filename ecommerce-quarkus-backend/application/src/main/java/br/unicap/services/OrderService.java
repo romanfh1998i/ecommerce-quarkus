@@ -18,9 +18,6 @@ public class OrderService extends BaseService<Order>{
     CartService cartService;
 
     @Inject
-    ProductService productService;
-
-    @Inject
     RealtimeService realtimeService;
 
     public OrderService() {
@@ -33,8 +30,8 @@ public class OrderService extends BaseService<Order>{
         List<Product> productsInCart = c.getProducts();
         Double totalPrice = 0D;
         for (Product eachProduct : productsInCart) {
-            productService.handleOrderCreation(eachProduct);
-            realtimeService.broadcastProductUpdate(eachProduct);
+            //productService.handleOrderCreation(eachProduct);
+            //realtimeService.broadcastProductUpdate(eachProduct);
             totalPrice += eachProduct.getPrice();
         }
         o.setProducts(productsInCart);

@@ -2,14 +2,17 @@ package br.unicap.services;
 
 
 import br.unicap.model.Product;
+import br.unicap.model.serializeHelpers.realtimePackets.SerializedProductPacket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.smallrye.reactive.messaging.annotations.Blocking;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.control.ActivateRequestContext;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
@@ -32,7 +35,7 @@ public class ProductService extends BaseService<Product>{
 
     @Inject
     @Channel("product-updated")
-    Emitter<Product> productUpdatedEmmiter;
+    Emitter<String> productUpdatedEmmiter;
 
     @Incoming("product-create")
     public Product create(Product p) throws JsonProcessingException {
@@ -42,13 +45,15 @@ public class ProductService extends BaseService<Product>{
     }
 
     @Incoming("cart-add-request")
-    public void handleCartAdd(Long productId) {
+    public void handleCartAdd(Long productId) throws JsonProcessingException {
         Product p = this.getById(productId);
         p.setAmountAvailable(p.getAmountAvailable() - 1);
         p.setAmountInCarts(p.getAmountInCarts() + 1);
         this.updateProductAsync(p);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(p);
         Thread t = new Thread(() -> {
-            productUpdatedEmmiter.send(p);
+            productUpdatedEmmiter.send(json);
         });
         t.start();
     }
@@ -84,13 +89,6 @@ public class ProductService extends BaseService<Product>{
     public void updateProductAsync (Product p) {
         Thread t = new Thread(() -> {
             this.update(p);
-        });
-        t.start();
-    }
-
-    public void broadcastUpdateProductAsync (Product p) {
-        Thread t = new Thread(() -> {
-            productUpdatedEmmiter.send(p);
         });
         t.start();
     }
