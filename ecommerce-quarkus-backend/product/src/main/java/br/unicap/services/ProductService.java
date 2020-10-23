@@ -38,7 +38,7 @@ public class ProductService extends BaseService<Product>{
     Emitter<String> productUpdatedEmmiter;
 
     @Incoming("product-create")
-    public Product create(Product p) throws JsonProcessingException {
+    public Product create(Product p)  {
         Product created = this.insert(p);
         this.products.put(created.getId(), created);
         return created;
@@ -59,20 +59,48 @@ public class ProductService extends BaseService<Product>{
     }
 
     @Incoming("cart-remove-request")
-    public void handleCartRemove(Long productId) {
+    public void handleCartRemove(Long productId) throws JsonProcessingException{
+
         Product p = this.getById(productId);
         p.setAmountAvailable(p.getAmountAvailable() + 1);
         p.setAmountInCarts(p.getAmountInCarts() - 1);
         this.updateProductAsync(p);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(p);
+        Thread t = new Thread(() -> {
+            productUpdatedEmmiter.send(json);
+        });
+        t.start();
     }
 
     @Incoming("cart-ordered-request")
-    public void handleCartOrdered(List<Product> products) {
-        for (Product eachProduct: products) {
+    public void handleCartOrdered(Long  productId) throws JsonProcessingException{
+
+        // Antes do parâmetro era List<Product> , agora será um produto
+
+        /*for (Product eachProduct: products) {
             eachProduct.setAmountAvailable(eachProduct.getAmountAvailable() + 1);
             eachProduct.setAmountInCarts(eachProduct.getAmountInCarts() - 1);
             this.updateProductAsync(eachProduct);
-        }
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(eachProduct);
+            Thread t = new Thread(() -> {
+                productUpdatedEmmiter.send(json);
+            });
+            t.start();
+        }*/
+
+        Product p = this.getById(productId);
+        p.setAmountInCarts(p.getAmountInCarts() - 1);
+        //p.setAmountAvailable(p.getAmountAvailable() - 1);   NAO ACHO QUE PRECISA ADICIONAR MAIS 1 POIS AO ADICIONAR NO CARRINHO
+        this.updateProductAsync(p);                                                       // A GENTE JA FAZ A SUBTRAÇAO
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(p);
+        Thread t = new Thread(() -> {
+            productUpdatedEmmiter.send(json);
+        });
+        t.start();
+
     }
 
     public void fetchAll() {

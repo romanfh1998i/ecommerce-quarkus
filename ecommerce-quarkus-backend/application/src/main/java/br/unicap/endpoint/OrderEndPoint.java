@@ -1,10 +1,7 @@
 package br.unicap.endpoint;
 
 import br.unicap.model.Order;
-import br.unicap.model.Product;
-import br.unicap.services.OrderService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import br.unicap.services.CartService;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
@@ -19,12 +16,8 @@ import javax.ws.rs.core.MediaType;
 public class OrderEndPoint {
 
     @Inject
-    OrderService orderService;
-
-    @Inject
     @Channel("order-create")
     Emitter<Order> orderEmitter;
-
 
     @POST
     @Produces({MediaType.APPLICATION_JSON})

@@ -33,10 +33,6 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    public Product(String name) {
-        this.name = name;
-    }
-
     public Product() {
 
     }
@@ -87,5 +83,17 @@ public class Product implements Serializable {
 
     public void setAmountOrdered(Long amountOrdered) {
         this.amountOrdered = amountOrdered;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", amountAvailable=" + amountAvailable +
+                ", amountInCarts=" + amountInCarts +
+                ", amountOrdered=" + amountOrdered +
+                '}';
     }
 }

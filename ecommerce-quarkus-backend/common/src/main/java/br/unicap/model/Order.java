@@ -102,4 +102,17 @@ public class Order implements Serializable {
     public void setCardNumber(Long cardNumber) {
         this.cardNumber = cardNumber;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", ownerName='" + ownerName + '\'' +
+                ", cartId='" + cartId + '\'' +
+                ", products=" + products +
+                ", totalPrice=" + totalPrice +
+                ", cardNumber=" + cardNumber +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }
