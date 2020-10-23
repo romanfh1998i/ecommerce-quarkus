@@ -1,20 +1,38 @@
 package br.unicap.model;
 
-import java.util.ArrayList;
+import javax.persistence.*;
+import java.util.List;
 import java.util.Random;
 
+@Entity
+@Table(name = "tb_order")
 public class Cart {
 
-    public String id = this.randomString();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public ArrayList<Product> products = new ArrayList<>();
+    @Column(name = "cart_id")
+    private String cartId = this.randomString();
 
-    public ArrayList<Product> getProducts() {
+    @Column(name = "owner_name")
+    private String ownerName;
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_order",
+            joinColumns = @JoinColumn(name = "id_order"),
+            inverseJoinColumns = @JoinColumn(name = "id_product")
+    )
+    public List<Product> products;
+
+    @Column(name = "card_number")
+    private Long cardNumber;
+
+    private String address;
+
+    public List<Product> getProducts() {
         return products;
-    }
-
-    public void setProducts(ArrayList<Product> products) {
-        this.products = products;
     }
 
     private String randomString() {
@@ -29,16 +47,58 @@ public class Cart {
         return saltStr;
     }
 
-    public String getId() {
-        return id;
+    public String getCartId() {
+        return cartId;
     }
 
 
     @Override
     public String toString() {
         return "Cart{" +
-                "id='" + id + '\'' +
+                "id='" + cartId + '\'' +
                 ", products=" + products +
                 '}';
     }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
+    public Long getCardNumber() {
+        return cardNumber;
+    }
+
+    public void setCardNumber(Long cardNumber) {
+        this.cardNumber = cardNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setCartId(String cartId) {
+        this.cartId = cartId;
+    }
+
+
 }

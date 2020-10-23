@@ -1,7 +1,6 @@
 package br.unicap.services;
 
 import br.unicap.model.Cart;
-import br.unicap.model.Order;
 import br.unicap.model.Product;
 import br.unicap.model.serializeHelpers.realtimePackets.SerializedCartPacket;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,10 +16,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
-public class CartService extends BaseService<Order>{
-
-    @Inject
-    RealtimeService realtimeService;
+public class CartService extends BaseService<Cart>{
 
     @Inject
     @Channel("cart-add-request")
@@ -39,28 +35,20 @@ public class CartService extends BaseService<Order>{
     ConcurrentHashMap<Session, Cart> activeCarts = new ConcurrentHashMap();
 
     public CartService() {
-        super(Order.class);
+        super(Cart.class);
     }
 
     @Incoming("order-create")
-    public Order createOrder(Order o) {
-
-        System.out.println(o.toString());
-        Cart c = this.findById(o.getCartId());
-
-        List<Product> productsInCart = c.getProducts();
-        Double totalPrice = 0D;
+    public Cart createOrder(Cart c) {
+        List<Product> productsInCart = this.findById(c.getCartId()).getProducts();
+        System.out.println(this.findById(c.getCartId()));
         for (Product eachProduct : productsInCart) {
-
-            System.out.println(eachProduct);
-
-            totalPrice += eachProduct.getPrice();
             cartOrderedRequest.send(eachProduct.getId());
         }
-        o.setProducts(productsInCart);
-        o.setTotalPrice(totalPrice);
+        c.setProducts(productsInCart);
+        Cart insertedCart = this.insert(c);
         this.removeCart(c);
-        return this.insert(o);
+        return insertedCart;
     }
 
 
@@ -70,9 +58,11 @@ public class CartService extends BaseService<Order>{
             c = activeCarts.get(session);
         } else {
             c = new Cart();
+            c.setProducts((new ArrayList<Product>()).subList(0, 0));
         }
 
         cartAddRequest.send(productId);
+
         c.getProducts().add(new Product(productId));
 
         activeCarts.put(session, c);
@@ -98,7 +88,7 @@ public class CartService extends BaseService<Order>{
     public void removeCart(Cart cart) {
         Set<Session> keys = new HashSet<Session>();
         for (Map.Entry<Session, Cart> entry : activeCarts.entrySet()) {
-            if (entry.getValue().getId().equals(cart.getId())) {
+            if (entry.getValue().getCartId().equals(cart.getCartId())) {
                 keys.add(entry.getKey());
             }
         }
@@ -128,7 +118,7 @@ public class CartService extends BaseService<Order>{
 
         Collection<Cart> carts = this.activeCarts.values();
         for (Cart eachCart : carts) {
-            if (eachCart.getId().equals(cartId)) {
+            if (eachCart.getCartId().equals(cartId)) {
 
                 System.out.println("PROCURANDO CARRINHO");
                 return eachCart;

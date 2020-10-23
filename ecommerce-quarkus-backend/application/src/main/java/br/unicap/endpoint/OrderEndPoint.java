@@ -1,6 +1,6 @@
 package br.unicap.endpoint;
 
-import br.unicap.model.Order;
+import br.unicap.model.Cart;
 import br.unicap.services.CartService;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
@@ -17,13 +17,13 @@ public class OrderEndPoint {
 
     @Inject
     @Channel("order-create")
-    Emitter<Order> orderEmitter;
+    Emitter<Cart> orderEmitter;
 
     @POST
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Order createOrder(Order o) {
-        orderEmitter.send(o);
-        return o;
+    public Cart createOrder(Cart c) {
+        orderEmitter.send(c);
+        return c;
     }
 }
