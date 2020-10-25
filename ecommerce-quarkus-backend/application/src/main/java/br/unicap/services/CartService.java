@@ -30,8 +30,6 @@ public class CartService extends BaseService<Cart>{
     @Channel("cart-ordered-request")
     Emitter<Long> cartOrderedRequest;
 
-
-
     ConcurrentHashMap<Session, Cart> activeCarts = new ConcurrentHashMap();
 
     public CartService() {
@@ -50,7 +48,6 @@ public class CartService extends BaseService<Cart>{
         return insertedCart;
     }
 
-
     public void addToCart(Session session, Long productId) {
         Cart c;
         if (activeCarts.containsKey(session)) {
@@ -65,8 +62,6 @@ public class CartService extends BaseService<Cart>{
         c.getProducts().add(new Product(productId));
 
         activeCarts.put(session, c);
-
-        System.out.println(c);
     }
 
     public void removeFromCart(Session session, Long productId) {
