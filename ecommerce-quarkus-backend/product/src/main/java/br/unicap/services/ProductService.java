@@ -77,24 +77,11 @@ public class ProductService extends BaseService<Product>{
     @Incoming("cart-ordered-request")
     public void handleCartOrdered(Long  productId) throws JsonProcessingException{
 
-        // Antes do parâmetro era List<Product> , agora será um produto
-
-        /*for (Product eachProduct: products) {
-            eachProduct.setAmountAvailable(eachProduct.getAmountAvailable() + 1);
-            eachProduct.setAmountInCarts(eachProduct.getAmountInCarts() - 1);
-            this.updateProductAsync(eachProduct);
-            ObjectMapper objectMapper = new ObjectMapper();
-            String json = objectMapper.writeValueAsString(eachProduct);
-            Thread t = new Thread(() -> {
-                productUpdatedEmmiter.send(json);
-            });
-            t.start();
-        }*/
 
         Product p = this.getById(productId);
         p.setAmountInCarts(p.getAmountInCarts() - 1);
-        //p.setAmountAvailable(p.getAmountAvailable() - 1);   NAO ACHO QUE PRECISA ADICIONAR MAIS 1 POIS AO ADICIONAR NO CARRINHO
-        this.updateProductAsync(p);                                                       // A GENTE JA FAZ A SUBTRAÇAO
+        p.setAmountOrdered(p.getAmountOrdered() + 1);
+        this.updateProductAsync(p);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(p);
         Thread t = new Thread(() -> {

@@ -30,8 +30,6 @@ public class CartService extends BaseService<Cart>{
     @Channel("cart-ordered-request")
     Emitter<Long> cartOrderedRequest;
 
-
-
     ConcurrentHashMap<Session, Cart> activeCarts = new ConcurrentHashMap();
 
     public CartService() {
@@ -41,7 +39,6 @@ public class CartService extends BaseService<Cart>{
     @Incoming("order-create")
     public Cart createOrder(Cart c) {
         List<Product> productsInCart = this.findById(c.getCartId()).getProducts();
-        System.out.println(this.findById(c.getCartId()));
         for (Product eachProduct : productsInCart) {
             cartOrderedRequest.send(eachProduct.getId());
         }
@@ -50,7 +47,6 @@ public class CartService extends BaseService<Cart>{
         this.removeCart(c);
         return insertedCart;
     }
-
 
     public void addToCart(Session session, Long productId) {
         Cart c;
@@ -66,8 +62,6 @@ public class CartService extends BaseService<Cart>{
         c.getProducts().add(new Product(productId));
 
         activeCarts.put(session, c);
-
-        System.out.println(c);
     }
 
     public void removeFromCart(Session session, Long productId) {
@@ -100,10 +94,6 @@ public class CartService extends BaseService<Cart>{
     public void sendCart(Session session) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-
-            System.out.println("MEU CARRNHO: ");
-            System.out.println(this.activeCarts.get(session));
-
             SerializedCartPacket packet = new SerializedCartPacket("get", this.activeCarts.get(session));
             String packetJson = objectMapper.writeValueAsString(packet);
             session.getAsyncRemote().sendText(packetJson);
@@ -114,13 +104,9 @@ public class CartService extends BaseService<Cart>{
 
     public Cart findById(String cartId) {
 
-        System.out.println(cartId);
-
         Collection<Cart> carts = this.activeCarts.values();
         for (Cart eachCart : carts) {
             if (eachCart.getCartId().equals(cartId)) {
-
-                System.out.println("PROCURANDO CARRINHO");
                 return eachCart;
             }
         }
