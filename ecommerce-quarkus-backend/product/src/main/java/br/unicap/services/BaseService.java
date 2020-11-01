@@ -27,6 +27,11 @@ public class BaseService<T> {
     }
 
     @Transactional
+    public T findById(Long id) {
+        return em.find(persistClass, id);
+    }
+
+    @Transactional
     public T update(T resource) {
         em.merge(resource);
         return resource;

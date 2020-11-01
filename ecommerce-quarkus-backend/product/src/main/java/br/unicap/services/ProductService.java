@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.control.ActivateRequestContext;
 import javax.inject.Inject;
+import javax.ws.rs.NotFoundException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -125,4 +126,23 @@ public class ProductService extends BaseService<Product>{
         return this.products.values();
     }
 
+    public Product handleProductUpdateRequest(Long id, Product p) {
+        Product productFound = this.findById(id);
+
+        if (productFound == null) {
+            throw new NotFoundException("Produto não encontrado");
+        }
+
+        if (p.getAmountOrdered() != null) {
+            productFound.setAmountOrdered(p.getAmountOrdered());
+        }
+        if (p.getAmountInCarts() != null) {
+            productFound.setAmountInCarts(p.getAmountInCarts());
+        }
+        if (p.getAmountAvailable() != null) {
+            productFound.setAmountAvailable(p.getAmountAvailable());
+        }
+
+        return this.update(productFound);
+    }
 }
