@@ -2,6 +2,7 @@ package br.unicap.endpoint;
 
 import br.unicap.model.Product;
 import br.unicap.services.ProductService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
@@ -43,11 +44,24 @@ public class ProuctEndpoint {
     }
 
     @PUT
-    @Path("/product/{id:[0-9][0-9]*}")
+    @Path("/ordered/{id:[0-9][0-9]*}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Product updateProduct(@PathParam("id") Long id, Product p) {
-        return this.productService.handleProductUpdateRequest(id, p);
+    public Product productOrdered(@PathParam("id") Long id) throws JsonProcessingException {
+        return this.productService.handleCartOrdered(id);
+    }
 
+    @PUT
+    @Path("/addedToCart/{id:[0-9][0-9]*}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Product productAddedToCart(@PathParam("id") Long id) {
+        return this.productService.handleCartAdd(id);
+    }
+
+    @PUT
+    @Path("/removeFromCart/{id:[0-9][0-9]*}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Product productRemovedFromCart(@PathParam("id") Long id) {
+        return this.productService.handleCartRemove(id);
     }
 
 }

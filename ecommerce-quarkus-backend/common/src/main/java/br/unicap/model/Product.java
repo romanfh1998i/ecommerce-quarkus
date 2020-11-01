@@ -1,10 +1,13 @@
 package br.unicap.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "tb_product")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Product implements Serializable {
 
     @Id

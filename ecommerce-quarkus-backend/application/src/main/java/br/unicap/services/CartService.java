@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -19,16 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CartService extends BaseService<Cart>{
 
     @Inject
-    @Channel("cart-add-request")
-    Emitter<Long> cartAddRequest;
+    RealtimeService realtimeService;
 
-    @Inject
-    @Channel("cart-remove-request")
-    Emitter<Long> cartRemoveRequest;
-
-    @Inject
-    @Channel("cart-ordered-request")
-    Emitter<Long> cartOrderedRequest;
+    @RestClient
+    RemoteProductService remoteProductService;
 
     ConcurrentHashMap<Session, Cart> activeCarts = new ConcurrentHashMap();
 
@@ -40,7 +35,8 @@ public class CartService extends BaseService<Cart>{
     public Cart createOrder(Cart c) {
         List<Product> productsInCart = this.findById(c.getCartId()).getProducts();
         for (Product eachProduct : productsInCart) {
-            cartOrderedRequest.send(eachProduct.getId());
+            Product updatedProduct = this.remoteProductService.productOrdered(eachProduct.getId());
+            this.realtimeService.broadcastProductUpdate(updatedProduct);
         }
         c.setProducts(productsInCart);
         Cart insertedCart = this.insert(c);
@@ -57,7 +53,8 @@ public class CartService extends BaseService<Cart>{
             c.setProducts((new ArrayList<Product>()).subList(0, 0));
         }
 
-        cartAddRequest.send(productId);
+        Product updatedProduct = this.remoteProductService.addToCart(productId);
+        this.realtimeService.broadcastProductUpdate(updatedProduct);
 
         c.getProducts().add(new Product(productId));
 
@@ -76,7 +73,8 @@ public class CartService extends BaseService<Cart>{
         if (toRemove != null) {
             c.getProducts().remove(toRemove);
         }
-        cartRemoveRequest.send(productId);
+        Product updatedProduct = this.remoteProductService.removeFromCart(productId);
+        this.realtimeService.broadcastProductUpdate(updatedProduct);
     }
 
     public void removeCart(Cart cart) {

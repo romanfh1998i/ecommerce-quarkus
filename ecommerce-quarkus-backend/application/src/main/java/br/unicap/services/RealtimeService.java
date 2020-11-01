@@ -30,10 +30,7 @@ public class RealtimeService {
         });
     }
 
-    @Incoming("product-updated")
-    public void broadcastProductUpdate(String productJson) throws JsonProcessingException {
-        ObjectMapper om = new ObjectMapper();
-        Product p = om.readValue(productJson, Product.class);
+    public void broadcastProductUpdate(Product p) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             SerializedProductPacket packet = new SerializedProductPacket("update", p);

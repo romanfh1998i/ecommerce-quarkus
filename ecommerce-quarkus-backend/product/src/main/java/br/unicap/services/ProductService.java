@@ -45,50 +45,47 @@ public class ProductService extends BaseService<Product>{
         return created;
     }
 
-    @Incoming("cart-add-request")
-    public void handleCartAdd(Long productId) throws JsonProcessingException {
+    public Product handleCartAdd(Long productId) {
         Product p = this.getById(productId);
+
+        if (p == null) {
+            throw new NotFoundException();
+        }
+
         p.setAmountAvailable(p.getAmountAvailable() - 1);
         p.setAmountInCarts(p.getAmountInCarts() + 1);
-        this.updateProductAsync(p);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(p);
-        Thread t = new Thread(() -> {
-            productUpdatedEmmiter.send(json);
-        });
-        t.start();
+
+        return this.update(p);
+
     }
 
-    @Incoming("cart-remove-request")
-    public void handleCartRemove(Long productId) throws JsonProcessingException{
+
+    public Product handleCartRemove(Long productId) {
 
         Product p = this.getById(productId);
+
+        if (p == null) {
+            throw new NotFoundException();
+        }
+
         p.setAmountAvailable(p.getAmountAvailable() + 1);
         p.setAmountInCarts(p.getAmountInCarts() - 1);
-        this.updateProductAsync(p);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(p);
-        Thread t = new Thread(() -> {
-            productUpdatedEmmiter.send(json);
-        });
-        t.start();
+
+        return this.update(p);
     }
 
-    @Incoming("cart-ordered-request")
-    public void handleCartOrdered(Long  productId) throws JsonProcessingException{
-
+    public Product handleCartOrdered(Long  productId) {
 
         Product p = this.getById(productId);
+
+        if (p == null) {
+            throw new NotFoundException();
+        }
+
         p.setAmountInCarts(p.getAmountInCarts() - 1);
         p.setAmountOrdered(p.getAmountOrdered() + 1);
-        this.updateProductAsync(p);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(p);
-        Thread t = new Thread(() -> {
-            productUpdatedEmmiter.send(json);
-        });
-        t.start();
 
+        return this.update(p);
     }
 
     public void fetchAll() {
