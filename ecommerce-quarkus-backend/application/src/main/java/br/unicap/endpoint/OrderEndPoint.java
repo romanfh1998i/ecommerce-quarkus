@@ -16,14 +16,12 @@ import javax.ws.rs.core.MediaType;
 public class OrderEndPoint {
 
     @Inject
-    @Channel("order-create")
-    Emitter<Cart> orderEmitter;
+    CartService cartService;
 
     @POST
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public Cart createOrder(Cart c) {
-        orderEmitter.send(c);
-        return c;
+        return cartService.createOrder(c);
     }
 }

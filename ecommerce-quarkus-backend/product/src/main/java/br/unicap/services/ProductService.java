@@ -2,22 +2,11 @@ package br.unicap.services;
 
 
 import br.unicap.model.Product;
-import br.unicap.model.serializeHelpers.realtimePackets.SerializedProductPacket;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.smallrye.reactive.messaging.annotations.Blocking;
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.control.ActivateRequestContext;
-import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
@@ -34,11 +23,6 @@ public class ProductService extends BaseService<Product>{
         this.fetchAll();
     }
 
-    @Inject
-    @Channel("product-updated")
-    Emitter<String> productUpdatedEmmiter;
-
-    @Incoming("product-create")
     public Product create(Product p)  {
         Product created = this.insert(p);
         this.products.put(created.getId(), created);
@@ -110,23 +94,4 @@ public class ProductService extends BaseService<Product>{
         return this.products.values();
     }
 
-    public Product handleProductUpdateRequest(Long id, Product p) {
-        Product productFound = this.findById(id);
-
-        if (productFound == null) {
-            throw new NotFoundException("Produto não encontrado");
-        }
-
-        if (p.getAmountOrdered() != null) {
-            productFound.setAmountOrdered(p.getAmountOrdered());
-        }
-        if (p.getAmountInCarts() != null) {
-            productFound.setAmountInCarts(p.getAmountInCarts());
-        }
-        if (p.getAmountAvailable() != null) {
-            productFound.setAmountAvailable(p.getAmountAvailable());
-        }
-
-        return this.update(productFound);
-    }
 }

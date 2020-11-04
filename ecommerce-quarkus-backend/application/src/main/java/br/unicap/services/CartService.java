@@ -5,9 +5,6 @@ import br.unicap.model.Product;
 import br.unicap.model.serializeHelpers.realtimePackets.SerializedCartPacket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -31,7 +28,6 @@ public class CartService extends BaseService<Cart>{
         super(Cart.class);
     }
 
-    @Incoming("order-create")
     public Cart createOrder(Cart c) {
         List<Product> productsInCart = this.findById(c.getCartId()).getProducts();
         for (Product eachProduct : productsInCart) {
